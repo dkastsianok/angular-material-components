@@ -164,7 +164,10 @@ export abstract class NgxMatDatepickerInputBase<S, D = NgxExtractDateTypeFromSel
       this._dateAdapter.deserialize(control.value),
     );
     const min = this._getMinDate();
-    return !min || !controlValue || this._dateAdapter.compareDateWithTime(min, controlValue) <= 0
+    const controlValueTimestamp = new Date(controlValue as Date | string).getTime();
+    const minTimestamp = new Date(min as Date | string).getTime();
+
+    return !min || !controlValue || controlValueTimestamp - minTimestamp >= 0
       ? null
       : { 'matDatetimePickerMin': { 'min': min, 'actual': controlValue } };
   };
@@ -174,8 +177,12 @@ export abstract class NgxMatDatepickerInputBase<S, D = NgxExtractDateTypeFromSel
     const controlValue = this._dateAdapter.getValidDateOrNull(
       this._dateAdapter.deserialize(control.value),
     );
+
     const max = this._getMaxDate();
-    return !max || !controlValue || this._dateAdapter.compareDateWithTime(max, controlValue) >= 0
+    const controlValueTimestamp = new Date(controlValue as Date | string).getTime();
+    const maxTimestamp = new Date(max as Date | string).getTime();
+
+    return !max || !controlValue || maxTimestamp - controlValueTimestamp > 0
       ? null
       : { 'matDatetimePickerMax': { 'max': max, 'actual': controlValue } };
   };
